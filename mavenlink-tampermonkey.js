@@ -122,7 +122,7 @@
   const addCss = () => {
     let style = document.createElement('style');
     style.type = 'text/css';
-    style.innerHTML = '.total-time{text-align:center;font-size:12px;border-top:1px solid #e1e1dd;color:cornflowerblue;height:30px;line-height:30px;}.total-utilisation.label{border-top:1px solid #e1e1dd;height:31px;line-height:33px;color:cornflowerblue !important;text-align: right;border-color:#e1e1dd;border-left:none !important;padding-right:10px;}.total-blank{border:none !important;}.totals td{height:30px;line-height:30px;}';
+    style.innerHTML = '.total-time{text-align:center;font-size:12px;border-top:1px solid #e1e1dd;color:cornflowerblue;height:30px;line-height:30px;}.total-utilisation.label{border-top:1px solid #e1e1dd;height:31px;line-height:33px;color:cornflowerblue !important;text-align: right;border-color:#e1e1dd;border-left:none !important;padding-right:10px;}.total-blank{border:none !important;}.totals td{height:30px;line-height:30px;}.weekly-timesheet-view .summary-cell.active-date{border-top: solid 3px #66c34b !important;border-bottom:none !important;}';
     document.getElementsByTagName('head')[0].appendChild(style);
   };
 
