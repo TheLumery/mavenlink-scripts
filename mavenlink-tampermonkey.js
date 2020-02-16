@@ -8,6 +8,20 @@
 // ==/UserScript==
 
 (function(document) {
+  const rafAsync = () => {
+    return new Promise(resolve => {
+      requestAnimationFrame(resolve);
+    });
+  };
+
+  const checkElement = (selector) => {
+    if (document.querySelector(selector) === null) {
+      return rafAsync().then(() => checkElement(selector));
+    } else {
+      return Promise.resolve(true);
+    }
+  };
+
   const addNewRow = () => {
     const summaryRow = document.querySelector('#table-container tr.summary');
     const newRow = document.createElement('TR');
@@ -124,35 +138,45 @@
     document.getElementsByTagName('head')[0].appendChild(style);
   };
 
-  const observerCallback = (mutations, observer) => {
+  const observerTotalsCallback = (mutations) => {
     mutations.forEach(() => {
       updateTotalDays();
     });
   };
 
-  const observeChanges = () => {
+  const observeTotalsChanges = () => {
     const targetNode = document.querySelector('#table-container tr.summary');
     const reference = targetNode.querySelectorAll('#table-container tr.summary td.week-total.summary-cell [class*="billable"]');
     const config = { attributes: false, childList: true, subtree: true };
-    const observer = new MutationObserver(observerCallback);
+    const observer = new MutationObserver(observerTotalsCallback);
 
     reference.forEach(ref => {
       observer.observe(ref, config);
     });
   };
 
-  const rafAsync = () => {
-    return new Promise(resolve => {
-      requestAnimationFrame(resolve);
+
+  const observerSummaryCallback = (mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+        mutation.addedNodes.forEach((added) => {
+          if (added.id === "table-container") {
+            checkElement('#table-container tr.summary')
+            .then(() => {
+                addNewRow();
+                updateTotalDays();
+            });
+          }
+        }); 
+      }
     });
   };
 
-  const checkElement = (selector) => {
-    if (document.querySelector(selector) === null) {
-      return rafAsync().then(() => checkElement(selector));
-    } else {
-      return Promise.resolve(true);
-    }
+  const observeSummaryChanges = () => {
+    const targetNode = document.querySelector('.weekly-timesheet-view');
+    const config = { attributes: false, childList: true, subtree: true };
+    const observer = new MutationObserver(observerSummaryCallback);
+    observer.observe(targetNode, config);
   };
 
   const init = () => {
@@ -161,7 +185,8 @@
         addCss();
         addNewRow();
         updateTotalDays();
-        observeChanges();
+        observeSummaryChanges();
+        observeTotalsChanges();
     });
   };
 
